@@ -178,7 +178,7 @@ service logstash restart
 
 echo -e "\n ## getting client configs\n"
 cd /var/www/html/kibana3/pub
-wget http://packages.elasticsearch.org/logstashforwarder/centos/logstash-forwarder-0.3.1-1.x86_64.rpm
+wget http://download.elasticsearch.org/logstash-forwarder/packages/logstash-forwarder-0.3.1-1.x86_64.rpm
 wget http://logstashbook.com/code/4/logstash_forwarder_redhat_init
 wget http://logstashbook.com/code/4/logstash_forwarder_redhat_sysconfig
 cat > /var/www/html/kibana3/pub/logstash-forwarder-installer.sh << EOF2
