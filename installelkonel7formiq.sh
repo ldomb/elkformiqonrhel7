@@ -17,8 +17,21 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>
 WKD=`pwd`
 POOL_ID=<poolid>
-LG_SERVER=<logstash_fqdh>
+LG_SERVER_FQDN=<logstash_fqdh>
+LG_SERVER_SHORT=<logstash_short>
 HT_PASS=<htpassword>
+LG_SERVER_IP=<lg_server_ip>
+
+echo -e "\n ## Disableing ipv6\n"
+cat >> /etc/sysctl.d/99-disableipv6.conf << EOF
+net.ipv6.conf.all.disable_ipv6=1
+EOF
+sysctl -p /etc/sysctl.d/99-disableipv6.conf
+
+echo -e "\n ## Adding entry to /etc/hosts\n"
+cat > /etc/hosts << EOF
+$LG_SERVER_IP	$LG_SERVER_FQDN	$LG_SERVER_SHORT
+EOF
 
 echo -e "\n ## Subscribing to Redhat..\n"
 subscription-manager register
@@ -72,8 +85,8 @@ sed -i "s@elasticsearch: \"http://\"+window.location.hostname+\":9200\"@elastics
 
 echo -e "\n ## add httpd config\n"
 cat >> /etc/httpd/conf.d/kibana3.conf << EOF
-<VirtualHost $LG_SERVER:80>
-  ServerName $LG_SERVER
+<VirtualHost $LG_SERVER_FQDN:80>
+  ServerName $LG_SERVER_FQDN
  
   DocumentRoot /var/www/html/kibana3
   <Directory /var/www/html/kibana3>
@@ -109,6 +122,7 @@ EOF
 
 echo -e "\n ## Setting htpasswd\n"
 htpasswd -c /etc/httpd/conf.d/kibana-htpasswd admin
+rm -rf /etc/httpd/conf.d/welcome.conf
 
 echo -e "\n ## starting and enableing apache\n"
 systemctl enable httpd
@@ -135,8 +149,8 @@ $WKD/lc-tlscert
 
 echo -e "\n ## Move ssl certs into logstashes ssl dir and copy\n"
 mkdir -p /etc/logstash/ssl/
-mv /root/selfsigned.crt /etc/logstash/ssl/logstash-forwarder.crt; chmod 666 /etc/logstash/logstash-forwarder.crt
-mv /root/selfsigned.key /etc/logstash/ssl/logstash-forwarder.key; chmod 666 /etc/logstash/logstash-forwarder.key
+mv /root/selfsigned.crt /etc/logstash/ssl/logstash-forwarder.crt; chmod 666 /etc/logstash/ssl/logstash-forwarder.crt
+mv /root/selfsigned.key /etc/logstash/ssl/logstash-forwarder.key; chmod 666 /etc/logstash/ssl/logstash-forwarder.key
 cp /etc/logstash/logstash-forwarder.crt /var/www/html/kibana3/pub/
 
 echo -e "\n ## Create lumberjack input config\n"
@@ -184,18 +198,18 @@ wget http://logstashbook.com/code/4/logstash_forwarder_redhat_init
 wget http://logstashbook.com/code/4/logstash_forwarder_redhat_sysconfig
 cat > /var/www/html/kibana3/pub/logstash-forwarder-installer.sh << EOF2
 #!/bin/bash
-wget -P /tmp/ --user=admin --password=$HT_PASS http://$LG_SERVER/pub/logstash-forwarder-0.3.1-1.x86_64.rpm
+wget -P /tmp/ --user=admin --password=$HT_PASS http://$LG_SERVER_FQDN/pub/logstash-forwarder-0.3.1-1.x86_64.rpm
 yum -y localinstall /tmp/logstash-forwarder-0.3.1-1.x86_64.rpm
 rm -f /tmp/logstash-forwarder-0.3.1-1.x86_64.rpm
-wget -O /etc/init.d/logstash-forwarder --user=$HT_PASS --password=yourpassword http://$LG_SERVER/pub/logstash_forwarder_redhat_init
+wget -O /etc/init.d/logstash-forwarder --user=$HT_PASS --password=yourpassword http://$LG_SERVER_FQDN/pub/logstash_forwarder_redhat_init
 chmod +x /etc/init.d/logstash-forwarder
-wget -O /etc/sysconfig/logstash-forwarder --user=admin --password=$HT_PASS dhttp://$LG_SERVER/pub/logstash_forwarder_redhat_sysconfig
-wget -P /etc/pki/tls/certs/ --user=admin --password=$HT_PASS http://$LG_SERVER/pub/logstash-forwarder.crt
+wget -O /etc/sysconfig/logstash-forwarder --user=admin --password=$HT_PASS dhttp://$LG_SERVER_FQDN/pub/logstash_forwarder_redhat_sysconfig
+wget -P /etc/pki/tls/certs/ --user=admin --password=$HT_PASS http://$LG_SERVER_FQDN/pub/logstash-forwarder.crt
 mkdir -p /etc/logstash-forwarder
 cat > /etc/logstash-forwarder/logstash-forwarder.conf << EOF
 {
   "network": {
-    "servers": [ "$LG_SERVER:5000" ],
+    "servers": [ "$LG_SERVER_FQDN:5000" ],
     "timeout": 15,
     "ssl ca": "/etc/pki/tls/certs/logstash-forwarder.crt"
   },
@@ -214,4 +228,5 @@ chkconfig --add logstash-forwarder
 service logstash-forwarder start
 EOF2
 
-echo -e "\n ## YOUR DONE. LOGIN TO THE CF APPLIANCE and launch the install script\n"
+echo -e "\n ## YOUR DONE. WE WILL REBOOT NOW. LOGIN TO THE CF APPLIANCE and launch the install script\n"
+init 6
