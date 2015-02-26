@@ -1,7 +1,6 @@
 Logstash installer for Rhel7 with Cloudforms evm.log filter
 ===========================================================
 * Author: Laurent Domb
-* Email: <laurent@redhat.com>
 * Date: 2015-02-26
 * Revision: 0.1
 
