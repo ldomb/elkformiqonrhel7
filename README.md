@@ -35,6 +35,10 @@ Login to cloudforms and download the logstash-forwarder-installer.sh from logsta
 ```
 # wget http://YOUR_ELK_SERVER/pub/logstash-forwarder-installer.sh
 ```
+Make the script executable
+```
+# chmod +x logstash-forwarder-installer.sh
+```
 Launch the installer
 ```
 # ./logstash-forwarder-installer.sh
