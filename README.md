@@ -9,7 +9,7 @@ Logstash installer for Rhel7 with Cloudforms evm.log filter
 ## Introduction
 This script will setup a logstash instance on RHEL7 and will add a filter for cloudforms/ManageIQ evm.log or automation.log. 
 
-## Setup
+## Setup elk server
 Download https://raw.githubusercontent.com/ldomb/elkformiqonrhel7/master/installelkonel7formiq.sh
 ```
 # wget https://raw.githubusercontent.com/ldomb/elkformiqonrhel7/master/installelkonel7formiq.sh
@@ -29,4 +29,13 @@ LG_SERVER_IP=<lg_server_ip>
 Launch the script
 ```
 #./installelkonel7formiq.sh
+```
+## Setup Cloudforms Appliance
+Login to cloudforms and download the logstash-forwarder-installer.sh from logstash
+```
+# wget http://YOUR_ELK_SERVER/pub/logstash-forwarder-installer.sh
+```
+Launch the installer
+```
+# ./logstash-forwarder-installer.sh
 ```
