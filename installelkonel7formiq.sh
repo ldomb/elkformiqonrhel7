@@ -15,18 +15,16 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>
-
-POOL_ID=<your_pool_id>
-LG_SERVER=<logstash_fqdn>
-HT_PASS=<ht_password>
+WKD=`pwd`
+POOL_ID=<poolid>
+LG_SERVER=<logstash_fqdh>
+HT_PASS=<htpassword>
 
 echo -e "\n ## Subscribing to Redhat..\n"
 subscription-manager register
-subscription-manager repos --disable=*
-subscription-manager list --available
 subscription-manager attach --pool=$POOL_ID
 subscription-manager repos --disable=*
-subscription-manager repos --enable=rhel-7-server-rpms --enable=rhel-7-server-rh-common-rpms -enable=rhel-7-server-optional-beta-rpms
+subscription-manager repos --enable=rhel-7-server-rpms --enable=rhel-7-server-rh-common-rpms --enable=rhel-7-server-optional-beta-rpms
 
 echo -e "\n ## Disable firewall\n"
 systemctl stop firewalld
@@ -63,7 +61,10 @@ systemctl start elasticsearch.service
 
 echo -e "\n ## install kibana\n"
 wget -P /var/www/html/ https://download.elasticsearch.org/kibana/kibana/kibana-3.1.0.tar.gz
-tar -xzvf /var/www/html/kibana-3.1.0.tar.gz; rm -f /var/www/html/kibana-3.1.0.tar.gz
+tar -xzvf /var/www/html/kibana-3.1.0.tar.gz -C /var/www/html
+mv /var/www/html/kibana-3.1.0 /var/www/html/kibana3
+rm -f /var/www/html/kibana-3.1.0.tar.gz
+rm -f /var/www/html/kibana-3.1.0
 mkdir -p /var/www/html/kibana3/pub
 
 echo -e "\n ## adding port 80 to kibana\n"
@@ -130,13 +131,13 @@ echo -e "\n ## installing golang and build lc-tlscert.go to create ssl cert\n"
 yum install golang -y
 wget https://raw.githubusercontent.com/driskell/log-courier/develop/src/lc-tlscert/lc-tlscert.go
 go build lc-tlscert.go
-./lc-tslcert
+$WKD/lc-tlscert
 
 echo -e "\n ## Move ssl certs into logstashes ssl dir and copy\n"
 mkdir -p /etc/logstash/ssl/
-mv /root/selfsigned.crt /etc/logstash/logstash-forwarder.crt; chmod 666 /etc/logstash/logstash-forwarder.crt
-mv /root/selfsigned.key /etc/logstash/logstash-forwarder.key; chmod 666 /etc/logstash/logstash-forwarder.key
-cp /etc/logstash/logstash-forwarder.crt /var/www/kibana3/pub/
+mv /root/selfsigned.crt /etc/logstash/ssl/logstash-forwarder.crt; chmod 666 /etc/logstash/logstash-forwarder.crt
+mv /root/selfsigned.key /etc/logstash/ssl/logstash-forwarder.key; chmod 666 /etc/logstash/logstash-forwarder.key
+cp /etc/logstash/logstash-forwarder.crt /var/www/html/kibana3/pub/
 
 echo -e "\n ## Create lumberjack input config\n"
 cat > /etc/logstash/conf.d/01-lumberjack-input.conf << EOF
