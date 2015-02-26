@@ -201,7 +201,7 @@ cat > /var/www/html/kibana3/pub/logstash-forwarder-installer.sh << EOF2
 wget -P /tmp/ --user=admin --password=$HT_PASS http://$LG_SERVER_FQDN/pub/logstash-forwarder-0.3.1-1.x86_64.rpm
 yum -y localinstall /tmp/logstash-forwarder-0.3.1-1.x86_64.rpm
 rm -f /tmp/logstash-forwarder-0.3.1-1.x86_64.rpm
-wget -O /etc/init.d/logstash-forwarder --user=$HT_PASS --password=yourpassword http://$LG_SERVER_FQDN/pub/logstash_forwarder_redhat_init
+wget -O /etc/init.d/logstash-forwarder --user=$HT_PASS --password=$HT_PASS http://$LG_SERVER_FQDN/pub/logstash_forwarder_redhat_init
 chmod +x /etc/init.d/logstash-forwarder
 wget -O /etc/sysconfig/logstash-forwarder --user=admin --password=$HT_PASS dhttp://$LG_SERVER_FQDN/pub/logstash_forwarder_redhat_sysconfig
 wget -P /etc/pki/tls/certs/ --user=admin --password=$HT_PASS http://$LG_SERVER_FQDN/pub/logstash-forwarder.crt
