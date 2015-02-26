@@ -29,7 +29,7 @@ EOF
 sysctl -p /etc/sysctl.d/99-disableipv6.conf
 
 echo -e "\n ## Adding entry to /etc/hosts\n"
-cat > /etc/hosts << EOF
+cat >> /etc/hosts << EOF
 $LG_SERVER_IP	$LG_SERVER_FQDN	$LG_SERVER_SHORT
 EOF
 
