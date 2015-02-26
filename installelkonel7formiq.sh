@@ -66,7 +66,8 @@ wget -P /var/www/html/ https://download.elasticsearch.org/kibana/kibana/kibana-3
 tar -xzvf /var/www/html/kibana-3.1.0.tar.gz; rm -f /var/www/html/kibana-3.1.0.tar.gz
 mkdir -p /var/www/html/kibana3/pub
 
-########### FIX kibana-3.0.1/config.js 
+echo -e "\n ## adding port 80 to kibana\n"
+sed -i "s@elasticsearch: \"http://\"+window.location.hostname+\":9200\"@elasticsearch: \"http://\"+window.location.hostname+\":80\"@g" /var/www/html/kibana3/config.js 
 
 echo -e "\n ## add httpd config\n"
 cat >> /etc/httpd/conf.d/kibana3.conf << EOF
