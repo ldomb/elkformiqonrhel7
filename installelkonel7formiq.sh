@@ -151,7 +151,7 @@ echo -e "\n ## Move ssl certs into logstashes ssl dir and copy\n"
 mkdir -p /etc/logstash/ssl/
 mv /root/selfsigned.crt /etc/logstash/ssl/logstash-forwarder.crt; chmod 666 /etc/logstash/ssl/logstash-forwarder.crt
 mv /root/selfsigned.key /etc/logstash/ssl/logstash-forwarder.key; chmod 666 /etc/logstash/ssl/logstash-forwarder.key
-cp /etc/logstash/logstash-forwarder.crt /var/www/html/kibana3/pub/
+cp /etc/logstash/ssl/logstash-forwarder.crt /var/www/html/kibana3/pub/
 
 echo -e "\n ## Create lumberjack input config\n"
 cat > /etc/logstash/conf.d/01-lumberjack-input.conf << EOF
